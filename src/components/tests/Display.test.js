@@ -1,13 +1,87 @@
+import React from 'react';
+import {screen, render, waitFor } from '@testing-library/react';
+import Display from '../Display';
+import userEvent from '@testing-library/user-event';
+import mockFetchShow from '../../api/fetchShow'
+jest.mock('../../api/fetchShow');
+
+const testShow = {
+    //add in approprate test data structure here.
+    name: "Test Show",
+    summary: "summary of show",
+    seasons: [
+        {
+            id: 1,
+            name: 'Season 1',
+            episodes: []
+        },
+        {
+            id: 2,
+            name: 'Season 2',
+            episodes: []
+        }
+    ]
+}
+
+test('Test that the Display component renders without any passed in props', () => {
+    render(<Display />);
+  })
 
 
+test('Test that when the fetch button is pressed, the show component will display', async () => {
+    render(<Display/>);
+
+    mockFetchShow.mockResolvedValueOnce(testShow);
+
+    const button = screen.getByRole('button');
+    userEvent.click(button);
+
+    const show = await screen.findByTestId('show-container');
+
+    expect(show).toBeInTheDocument();
+    
+  })
 
 
+  test('Test that when the fetch button is pressed, the amount of select options rendered is equal to the amount of seasons in your test data', async ()=> {
+
+    render(<Display/>);
+
+    mockFetchShow.mockResolvedValueOnce(testShow);
+
+    const button = screen.getByRole('button');
+    userEvent.click(button);
+
+    const season = await screen.findAllByTestId('season-option');
+
+    expect(season).toHaveLength(2)
+
+});
 
 
+test('Test that when the fetch button is pressed, the amount of select options rendered is equal to the amount of seasons in your test data.', ()=> {
 
+    const mockDisplayFunc = jest.fn();
+    render(<Display displayFunc={mockDisplayFunc}/>)
+    
+    mockFetchShow.mockResolvedValueOnce(testShow);
+    
+    const button = screen.getByRole('button');
+    userEvent.click(button);
+    
+    waitFor(() => expect(mockDisplayFunc).toHaveBeenCalledTimes(1));
+    
+});
 
+test('test if optional function is being called', ()=>{
+    const fakeClick = jest.fn();
+    render(<Display handleClick={fakeClick}/>);
 
-
+    const button = screen.getByRole('button');
+    userEvent.click(button);
+    
+    waitFor(() => expect(fakeClick).toHaveBeenCalledTimes(1))
+});
 
 
 
