@@ -2,6 +2,7 @@ import React from 'react';
 import Episodes from "./Episodes";
 import Loading from './Loading';
 
+
 const Show = (props) => {
     const { handleSelect, selectedSeason, show } = props;
     
